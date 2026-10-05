@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Бриф: БЦ Wall Street</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Onest:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1F5; --surface:#FFFFFF; --ink:#16202E; --muted:#5A6678; --line:#D3D9E2;
+  --accent:#2346D6; --accent-ink:#FFFFFF; --ok:#0F8A5F; --hover:#E3E8EF;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F141B; --surface:#171E28; --ink:#E8ECF1; --muted:#95A1B3; --line:#2A3442;
+    --accent:#8BA6FF; --accent-ink:#0F141B; --ok:#4CC38A; --hover:#1D2632;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F141B; --surface:#171E28; --ink:#E8ECF1; --muted:#95A1B3; --line:#2A3442;
+  --accent:#8BA6FF; --accent-ink:#0F141B; --ok:#4CC38A; --hover:#1D2632;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px); scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Onest",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  font-size:16px; line-height:1.55; -webkit-text-size-adjust:100%;
+}
+h1,h2{font-family:"Jost","Onest",system-ui,Arial,sans-serif; font-weight:500; letter-spacing:-0.01em; margin:0}
+h1{font-size:clamp(34px,6vw,60px); line-height:1.05; max-width:16ch}
+h2{font-size:clamp(24px,3.4vw,32px); line-height:1.15}
+h2 .num{color:var(--muted); margin-right:.5em; font-variant-numeric:tabular-nums}
+h3{font-size:14px; font-weight:600; color:var(--muted); margin:28px 0 10px}
+p{margin:0}
+.page{max-width:1120px; margin:0 auto; padding:0 20px}
+.hero{padding:56px 0 40px}
+.hero p{max-width:62ch; margin-top:20px; color:var(--muted); font-size:17px}
+.hero p + p{margin-top:10px}
+
+.bar{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--bg);
+  border-bottom:1px solid var(--line); padding:10px 0; display:none;
+  font-size:14px; font-weight:500;
+}
+.track{height:4px; background:var(--line); border-radius:2px; margin-top:8px; overflow:hidden}
+.track i{display:block; height:100%; width:0; background:var(--ok); transition:width .25s}
+
+.grid{display:grid; grid-template-columns:250px minmax(0,1fr); gap:56px; align-items:start}
+nav{position:sticky; top:calc(env(safe-area-inset-top,0px) + 24px); font-size:14px; padding-bottom:24px}
+nav .total{font-weight:600; font-size:15px}
+nav ol{list-style:none; margin:18px 0 0; padding:0; border-top:1px solid var(--line)}
+nav li{border-bottom:1px solid var(--line)}
+nav a{
+  display:flex; justify-content:space-between; gap:12px; padding:8px 4px;
+  color:var(--ink); text-decoration:none;
+}
+nav a:hover{background:var(--hover)}
+nav a span:last-child{color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap}
+nav li.done a span:last-child{color:var(--ok); font-weight:600}
+
+section{padding:40px 0; border-top:1px solid var(--line)}
+.summary{margin-top:14px; max-width:68ch; font-size:17px}
+.opts{display:grid; gap:2px; max-width:68ch}
+.opts.two{grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:16px; max-width:none}
+label.opt{
+  display:flex; gap:10px; align-items:flex-start; padding:7px 8px; border-radius:6px; cursor:pointer;
+}
+label.opt:hover{background:var(--hover)}
+label.opt input{margin:4px 0 0; width:16px; height:16px; flex:none; accent-color:var(--accent)}
+.q{border-left:3px solid var(--line); padding:2px 0 2px 16px; margin-top:22px; transition:border-color .2s}
+.q.answered{border-left-color:var(--ok)}
+.q .title{font-weight:500; max-width:68ch; margin-bottom:8px}
+.q .title b{font-weight:600; color:var(--muted); margin-right:.5em; font-variant-numeric:tabular-nums}
+.q.answered .title b{color:var(--ok)}
+.q .note{color:var(--muted); font-size:14px; max-width:68ch; margin:0 0 8px}
+textarea,input[type=text]{
+  width:100%; max-width:68ch; display:block; font:inherit; color:var(--ink); background:var(--surface);
+  border:1px solid var(--line); border-radius:6px; padding:9px 11px;
+}
+textarea{min-height:76px; resize:vertical}
+input[type=text]{margin-top:8px; font-size:15px}
+textarea:focus-visible,input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+::placeholder{color:var(--muted); opacity:.8}
+
+.final{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:28px; margin:16px 0 72px}
+.final p{color:var(--muted); max-width:62ch; margin-top:10px}
+.actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; align-items:center}
+button{
+  font:inherit; font-weight:600; border-radius:6px; padding:11px 18px; cursor:pointer;
+  border:1px solid var(--line); background:transparent; color:var(--ink);
+}
+button.primary{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+button:hover{filter:brightness(1.06)}
+button:disabled{opacity:.6; cursor:default}
+#status{font-size:14px; color:var(--ok); font-weight:500}
+#out{max-width:none; min-height:320px; margin-top:18px; font-size:14px; line-height:1.5; display:none}
+
+@media (max-width:860px){
+  .grid{display:block}
+  nav{display:none}
+  .bar{display:block}
+  .hero{padding:36px 0 28px}
+  .opts.two{grid-template-columns:1fr}
+  .final{padding:20px}
+}
+@media print{
+  .bar,nav,.actions{display:none}
+  .grid{display:block}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="hero">
+    <h1>БЦ Wall Street: приложение, сайт и карты Wallet</h1>
+    <p>Здесь записано, как мы поняли задачу, и собраны вопросы, без которых нельзя точно назвать сроки и стоимость. Отметьте нужное и ответьте на вопросы. Это займёт 15–20 минут.</p>
+    <p>Если ответа пока нет, так и напишите. Ответы сохраняются в этом браузере, к брифу можно вернуться позже. В конце нажмите «Отправить ответы», и они придут нам.</p>
+  </header>
+
+  <div class="bar" aria-hidden="true">
+    <span class="total"></span>
+    <div class="track"><i></i></div>
+  </div>
+
+  <div class="grid">
+    <nav aria-label="Разделы брифа">
+      <div class="total"></div>
+      <div class="track"><i></i></div>
+      <ol id="toc"></ol>
+    </nav>
+    <main>
+      <div id="sections"></div>
+      <div class="final">
+        <h2>Готово? Отправьте ответы</h2>
+        <p>Отмеченное и ответы уйдут нам одним файлом. Вопросы без ответа попадут в него с прочерком, это нормально. Отправлять можно несколько раз: мы возьмём последнюю версию.</p>
+        <div class="actions">
+          <button class="primary" id="send" type="button">Отправить ответы</button>
+          <button id="build" type="button">Посмотреть ответы текстом</button>
+          <button id="copy" type="button" hidden>Скопировать текст</button>
+          <button id="reset" type="button">Очистить все ответы</button>
+          <span id="status" role="status"></span>
+        </div>
+        <textarea id="out" readonly aria-label="Собранные ответы"></textarea>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+// ===== НАСТРОЙКА ОТПРАВКИ В TELEGRAM: заполнить три строки =====
+// Токен бота выглядит так: 1234567890:AAH...xyz. Он разрезан на две части по двоеточию.
+var BOT_ID  = '8980357030';
+var BOT_KEY = 'AAE29xj4GojcOaoznFPPn-vTCYFpTJWM7Wo';
+var CHAT_ID = '337194349';
+// ================================================================
+
+// Типы вопросов: R — один вариант, M — несколько, T — свободный ответ
+var R=function(t,o,n){return{k:'r',t:t,o:o,n:n}}, M=function(t,o,n){return{k:'m',t:t,o:o,n:n}}, T=function(t,n){return{k:'t',t:t,n:n}};
+
+var DATA=[
+{id:'obsh', title:'О бизнес-центре и проекте',
+ sum:'Вы хотите для БЦ Wall Street мобильное приложение для iPhone и Android, сайт и электронные карты Wallet. Цель: арендаторы знают обо всём, что происходит в здании, пользуются столовой и услугами, а БЦ получает прямой канал связи с людьми и немного зарабатывает на рекламе.',
+ checks:[],
+ qs:[
+  T('Кто заполняет бриф: имя, должность, как с вами связаться'),
+  T('Сколько компаний-арендаторов в БЦ и сколько примерно человек в нём работает'),
+  T('Кто принимает финальные решения по проекту и согласует макеты'),
+  M('Что для вас главный результат через полгода после запуска',['Арендаторы знают о новостях и событиях БЦ','У столовой больше заказов и меньше очередей','Доход от рекламы','Меньше однотипных вопросов администратору','Имидж БЦ и аргумент для новых арендаторов']),
+  T('Есть ли желаемая дата запуска и к чему она привязана'),
+  R('Фирменный стиль БЦ',['Есть брендбук: логотип, цвета, шрифты','Есть только логотип','Ничего нет, нужно разработать']),
+  T('Приложения или сайты, которые вам нравятся как пример', 'Не обязательно бизнес-центры. Подойдёт любое приложение, которым вам удобно пользоваться.')
+ ]},
+{id:'stol', title:'Столовая: меню, заказ, оплата',
+ sum:'Столовая ваша собственная, поэтому для неё делаем полный цикл: меню, заказ на вынос, оплата в приложении, оповещение о готовности и экран очереди. Вы готовы рассмотреть скидки и акции.',
+ checks:['Меню с фото, составом и ценами','Меню дня и бизнес-ланч','Заказ на вынос','Заказ ко времени: «заберу в 13:15»','Оплата картой и через СБП','Уведомление «заказ готов»','Экран очереди в приложении','Экран очереди на телевизоре в зале','История заказов и повтор заказа одной кнопкой','Скидки и акции','Бонусная программа: баллы за заказы','Отметка «блюдо закончилось»','Доставка в офис на этаж','Питание за счёт компании-арендатора'],
+ qs:[
+  R('Какая кассовая программа стоит в столовой',['iiko','r_keeper','1С','Другая','Не знаю, уточню'],'От этого зависит больше всего: если программа умеет отдавать меню и принимать заказы, приложение подключается к ней напрямую. Если нет, кухне понадобится отдельный планшет для заказов.'),
+  T('Принимает ли столовая оплату картой сейчас и через какой банк'),
+  T('На какое юрлицо будут приходить платежи из приложения и есть ли у него онлайн-касса'),
+  R('Как часто меняется меню',['Каждый день','Раз в неделю','Почти не меняется']),
+  T('Сколько гостей проходит через столовую в день и в какие часы пик'),
+  R('Как кухня будет узнавать о новом заказе',['На кассе, в той же программе','На отдельном планшете','По распечатанному чеку','Не знаем, предложите']),
+  R('Телевизор для экрана очереди в зале',['Уже есть','Нет, готовы поставить','Не нужен, хватит приложения']),
+  M('Какие скидки и акции рассматриваете',['Постоянная скидка по карте резидента','Акции на отдельные блюда','Скидки в непиковые часы','Баллы за заказы','Комбо-наборы','Пока не решили']),
+  R('Заказ без приложения, через сайт',['Да, на сайте тоже с оплатой','На сайте только меню','Не решили'])
+ ]},
+{id:'kafe', title:'Кофейни и рестораны-партнёры',
+ sum:'Кофемания, Бодро, Рокетс и другие заведения: в приложении у них карточка с описанием и переход на их сайт или в их приложение, где действуют их собственные скидки и бонусы. Заказ и оплату для них мы не делаем.',
+ checks:['Карточка заведения: описание, часы работы, где находится','Кнопка перехода на сайт или в приложение заведения','Ссылка на меню заведения','Спецпредложения для резидентов БЦ по промокоду','Отметка «открыто сейчас»'],
+ qs:[
+  T('Полный список заведений, которые нужно показать'),
+  R('Договорённости с заведениями о скидках для резидентов',['Уже есть','Ведём переговоры','Нет, достаточно ссылок']),
+  R('Размещение заведений в приложении',['Бесплатно, это сервис для арендаторов','Платно, как реклама','По-разному'])
+ ]},
+{id:'park', title:'Парковка и велопарковка',
+ sum:'В приложении есть раздел про парковку А1 Парк и велопарковку, которая находится на территории парковки.',
+ checks:['Тарифы, часы работы, схема заезда','Переход на сайт или в приложение оператора парковки','Оплата парковки внутри нашего приложения','Количество свободных мест','Заказ гостевого пропуска на автомобиль','Велопарковка: информация и схема','Велопарковка: бронирование места'],
+ qs:[
+  R('Что происходит, когда человек открывает раздел «Парковка»',['Видит информацию и переходит к оператору','Платит и видит свободные места в нашем приложении','Не решили'],'Второй вариант возможен, только если оператор парковки готов технически подключить нас к своей системе.'),
+  R('Контакт в А1 Парк, с которым можно обсудить подключение',['Есть','Нет','Узнаем']),
+  T('Велопарковка: платная или бесплатная, сколько мест, нужен ли учёт занятых мест')
+ ]},
+{id:'zont', title:'Зонты',
+ sum:'Зонты выдаются через администратора. Здесь мы хотим проверить, правильно ли поняли: сотрудник компании-арендатора берёт зонт на стойке на время и потом возвращает.',
+ checks:['Информация «зонт можно взять у администратора»','Заявка на зонт из приложения','Учёт выдачи и возврата у администратора','Напоминание вернуть зонт','Залог или плата за пользование'],
+ qs:[
+  R('В запросе написано «для арендодателей». Кто на самом деле берёт зонты',['Сотрудники компаний-арендаторов','Собственники помещений','Все, включая гостей БЦ']),
+  R('Условия выдачи',['Бесплатно','Под залог','Платно']),
+  T('Сколько зонтов в наличии и как их выдачу учитывают сейчас')
+ ]},
+{id:'zar', title:'Зарядка электромобилей',
+ sum:'В приложении есть раздел про зарядные станции в здании.',
+ checks:['Где находятся станции, какие разъёмы, тариф','Переход в приложение оператора станций','Статус: свободно или занято','Бронирование времени','Оплата зарядки внутри нашего приложения','Уведомление «зарядка завершена»'],
+ qs:[
+  R('Чьи это станции',['Собственные станции БЦ','Стороннего оператора','Станций пока нет, планируются']),
+  T('Сколько станций и кто оператор или производитель'),
+  T('Как водители оплачивают зарядку сейчас')
+ ]},
+{id:'anons', title:'Анонсы и новости БЦ',
+ sum:'Лента новостей здания: события, плановые работы, отключения, акции. Самые важные сообщения дублируются уведомлением на телефон и на карту Wallet.',
+ checks:['Лента анонсов с фото','Афиша событий с датой и временем','Срочные сообщения: отключения, ремонт лифтов','Уведомления на телефон','Анонсы для отдельных этажей или компаний','Отложенная публикация по расписанию','Опросы арендаторов'],
+ qs:[
+  T('Кто будет писать и публиковать анонсы'),
+  R('Как часто появляются новости',['Несколько раз в неделю','Раз в неделю','Несколько раз в месяц']),
+  M('Как вы сообщаете новости арендаторам сейчас',['Рассылка по почте','Чат или канал в мессенджере','Объявления в лифтах и холле','Никак'])
+ ]},
+{id:'rekl', title:'Рекламная площадка',
+ sum:'Бизнесы по соседству платно размещают свои предложения в приложении и на сайте. БЦ на этом зарабатывает.',
+ checks:['Баннеры на главном экране','Каталог «Рядом с БЦ» с карточками компаний','Акции с промокодом','Платное уведомление от рекламодателя','Статистика показов и переходов','Личный кабинет рекламодателя','Приём оплаты за рекламу онлайн'],
+ qs:[
+  R('Кто размещает рекламу',['Администратор БЦ вручную','Рекламодатель сам через кабинет, вы проверяете','Не решили'],'Кабинет рекламодателя заметно увеличивает объём работ. При небольшом числе рекламодателей проще вести размещения вручную.'),
+  R('Как берёте плату',['Фиксированная сумма в месяц','За каждое размещение','По договорённости с каждым']),
+  R('Есть ли уже желающие разместиться',['Да, есть договорённости','Интерес есть, договорённостей нет','Пока нет']),
+  T('Что рекламировать нельзя', 'Например, прямых конкурентов ваших арендаторов.')
+ ]},
+{id:'otz', title:'Отзывы и обратная связь',
+ sum:'Арендаторы оставляют отзывы, а вы получаете обратную связь о столовой, услугах и самом здании.',
+ checks:['Оценка заказа в столовой','Отзыв о БЦ и услугах','Сообщение о проблеме с фото: сломалось, не работает, грязно','Анонимные отзывы','Ответ администрации на отзыв','Открытая лента отзывов'],
+ qs:[
+  R('Кто видит отзывы',['Только администрация','Все пользователи, после проверки','Не решили']),
+  T('Кто будет разбирать отзывы и отвечать на них'),
+  R('Заявки в службу эксплуатации через приложение',['Нужны','Нет, для этого есть другая система','Не решили'])
+ ]},
+{id:'site', title:'Сайт',
+ sum:'На сайте то же, что в приложении, в красивой и цепляющей подаче. Арендаторы узнают о происходящем без установки приложения, а рекламные места дают дополнительный доход.',
+ two:true,
+ checks:['Главная страница о бизнес-центре','Новости и анонсы','Меню столовой','Заказ в столовой с оплатой','Кофейни и рестораны рядом','Услуги здания: парковка, зарядка, велопарковка, зонты','Рекламные блоки','Страница «Рекламодателям» с условиями','Отзывы и форма обратной связи','Страница установки приложения и карты Wallet','Раздел для будущих арендаторов: свободные площади, заявка','Контакты и схема проезда','Личный кабинет с тем же входом, что в приложении','Английская версия'],
+ qs:[
+  R('Сайт БЦ сейчас',['Есть, заменяем новым','Есть, новый делаем отдельно','Сайта нет']),
+  T('Адрес сайта или домен, на котором будет новый сайт'),
+  R('Для кого сайт в первую очередь',['Для тех, кто уже работает в БЦ','Для будущих арендаторов','Для обеих групп']),
+  R('Тексты и фотографии',['Дадим сами','Нужны копирайтер и съёмка','Частично есть'])
+ ]},
+{id:'wallet', title:'Электронные карты Wallet',
+ sum:'Карта в кошельке телефона служит вторым каналом уведомлений для тех, кто отключил их в приложении или вовсе его не ставил. На карту приходят анонсы и акции, её же можно показывать в столовой для скидки.',
+ checks:['Карта резидента БЦ с QR-кодом','Скидка в столовой по карте','Уведомления об анонсах','Уведомления об акциях столовой','Напоминание на экране блокировки рядом со зданием','Баланс бонусов на карте','Добавление карты по QR-коду с плаката или стойки','Разные карты для разных компаний'],
+ qs:[
+  M('Что карта даёт человеку, кроме уведомлений',['Скидку в столовой','Бонусы','Подтверждение, что он работает в БЦ','Ничего, только уведомления'],'Карту без пользы для владельца быстро удаляют. Скидка в столовой даёт причину её хранить.'),
+  R('Как часто планируете отправлять сообщения на карту',['Примерно раз в день','Два-три раза в неделю','Реже']),
+  R('Каких телефонов у сотрудников БЦ больше',['iPhone','Android','Примерно поровну','Не знаем'],'На iPhone карта открывается во встроенном «Кошельке». На Android может понадобиться отдельное приложение-кошелёк, это мы проверим на этапе обследования.'),
+  R('Должна ли карта работать как пропуск в здание',['Нет','Возможно, в будущем','Да, хотим сразу'])
+ ]},
+{id:'users', title:'Пользователи и вход',
+ sum:'Нужно решить, кто пользуется приложением и как человек в него входит.',
+ checks:['Профиль пользователя','Привязка человека к компании-арендатору','Тёмная тема','Английский язык интерфейса'],
+ qs:[
+  M('Кто пользуется приложением',['Сотрудники компаний-арендаторов','Гости и посетители БЦ','Люди из соседних зданий','Собственники помещений']),
+  R('Как человек входит',['По номеру телефона','Без регистрации, телефон нужен только для заказа','По приглашению от своей компании']),
+  R('Нужно ли отличать своих от посторонних: разные цены, скидки, доступ к разделам',['Да','Нет','Не решили'])
+ ]},
+{id:'org', title:'Управление и организация',
+ sum:'Меню, анонсы, реклама и отзывы ведутся из панели администратора в браузере. Отдельно нужно договориться, на кого оформляются приложения и что запускается первым.',
+ checks:['Разные роли: администратор БЦ, менеджер столовой, менеджер рекламы','Статистика: пользователи, заказы, реклама','Выгрузка отчётов в Excel'],
+ qs:[
+  T('Кто будет работать в панели администратора и сколько это человек'),
+  R('Аккаунты для публикации в App Store, Google Play и RuStore',['Уже есть','Нет, оформим на своё юрлицо','Нужна помощь с оформлением'],'Приложение публикуется от имени вашего юрлица. Apple проверяет юрлицо от двух до четырёх недель, поэтому начать стоит заранее.'),
+  R('Что запускаем первым',['Всё сразу','Сначала сайт и карты Wallet, потом приложение','Сначала приложение','Посоветуйте']),
+  T('Есть ли ориентир по бюджету или рамка, в которую нужно уложиться'),
+  R('Поддержка после запуска',['Нужна ваша поддержка','Справимся своими силами','Обсудим позже']),
+  T('Что ещё важно, о чём мы не спросили')
+ ]}
+];
+
+var KEY='brief-wall-street-v1', state={};
+try{ state=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ state={}; }
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} }
+
+function el(tag,cls,text){ var e=document.createElement(tag); if(cls)e.className=cls; if(text!=null)e.textContent=text; return e; }
+function isAnswered(qid,q){
+  var v=state[qid], note=(state[qid+':note']||'').trim();
+  if(q.k==='t') return !!(v&&String(v).trim());
+  if(q.k==='r') return v!=null||!!note;
+  return (Array.isArray(v)&&v.length>0)||!!note;
+}
+
+var secBox=document.getElementById('sections'), toc=document.getElementById('toc'), qNodes=[];
+
+DATA.forEach(function(s,si){
+  var n=si+1, sec=el('section'); sec.id=s.id;
+  var h=el('h2'); h.appendChild(el('span','num',String(n))); h.appendChild(document.createTextNode(s.title)); sec.appendChild(h);
+  sec.appendChild(el('p','summary',s.sum));
+
+  if(s.checks.length){
+    sec.appendChild(el('h3',null,'Что может входить. Отметьте нужное'));
+    var box=el('div','opts'+(s.two?' two':''));
+    s.checks.forEach(function(c,ci){
+      var id=s.id+':c'+ci, lab=el('label','opt'), inp=el('input'); inp.type='checkbox'; inp.checked=!!state[id];
+      inp.addEventListener('change',function(){ state[id]=inp.checked; save(); });
+      lab.appendChild(inp); lab.appendChild(el('span',null,c)); box.appendChild(lab);
+    });
+    sec.appendChild(box);
+  }
+
+  sec.appendChild(el('h3',null,'Вопросы'));
+  s.qs.forEach(function(q,qi){
+    var qid=s.id+':q'+qi, num=n+'.'+(qi+1), wrap=el('div','q');
+    var t=el('p','title'); t.appendChild(el('b',null,num)); t.appendChild(document.createTextNode(q.t)); wrap.appendChild(t);
+    if(q.n) wrap.appendChild(el('p','note',q.n));
+    var upd=function(){ wrap.classList.toggle('answered',isAnswered(qid,q)); save(); refresh(); };
+
+    if(q.k==='t'){
+      var ta=el('textarea'); ta.value=state[qid]||''; ta.setAttribute('aria-label',q.t);
+      ta.addEventListener('input',function(){ state[qid]=ta.value; upd(); });
+      wrap.appendChild(ta);
+    } else {
+      var ob=el('div','opts');
+      q.o.forEach(function(o,oi){
+        var lab=el('label','opt'), inp=el('input');
+        inp.type=q.k==='r'?'radio':'checkbox'; inp.name=qid;
+        inp.checked=q.k==='r'?state[qid]===oi:(Array.isArray(state[qid])&&state[qid].indexOf(oi)>-1);
+        inp.addEventListener('change',function(){
+          if(q.k==='r'){ state[qid]=oi; }
+          else{ var a=Array.isArray(state[qid])?state[qid].slice():[]; var p=a.indexOf(oi); if(inp.checked&&p<0)a.push(oi); if(!inp.checked&&p>-1)a.splice(p,1); a.sort(function(x,y){return x-y}); state[qid]=a; }
+          upd();
+        });
+        lab.appendChild(inp); lab.appendChild(el('span',null,o)); ob.appendChild(lab);
+      });
+      wrap.appendChild(ob);
+      var note=el('input'); note.type='text'; note.placeholder='Уточнение, если нужно'; note.value=state[qid+':note']||''; note.setAttribute('aria-label','Уточнение к вопросу '+num);
+      note.addEventListener('input',function(){ state[qid+':note']=note.value; upd(); });
+      wrap.appendChild(note);
+    }
+    wrap.classList.toggle('answered',isAnswered(qid,q));
+    qNodes.push({sec:si,qid:qid,q:q});
+    sec.appendChild(wrap);
+  });
+  secBox.appendChild(sec);
+
+  var li=el('li'), a=el('a'); a.href='#'+s.id; a.appendChild(el('span',null,s.title)); a.appendChild(el('span',null,'')); li.appendChild(a); toc.appendChild(li);
+});
+
+function refresh(){
+  var per=DATA.map(function(){return [0,0]}), done=0;
+  qNodes.forEach(function(x){ per[x.sec][1]++; if(isAnswered(x.qid,x.q)){ per[x.sec][0]++; done++; } });
+  var total=qNodes.length, txt='Отвечено '+done+' из '+total;
+  document.querySelectorAll('.total').forEach(function(e){ e.textContent=txt; });
+  document.querySelectorAll('.track i').forEach(function(e){ e.style.width=(total?done/total*100:0)+'%'; });
+  Array.prototype.forEach.call(toc.children,function(li,i){
+    li.classList.toggle('done',per[i][0]===per[i][1]);
+    li.querySelector('a span:last-child').textContent=per[i][0]+'/'+per[i][1];
+  });
+  return [done,total];
+}
+refresh();
+
+function buildText(){
+  var c=refresh(), L=[];
+  L.push('БРИФ: БЦ WALL STREET');
+  L.push('Приложение, сайт, карты Wallet');
+  L.push('Дата: '+new Date().toLocaleDateString('ru-RU'));
+  L.push('Отвечено вопросов: '+c[0]+' из '+c[1]);
+  DATA.forEach(function(s,si){
+    var n=si+1; L.push(''); L.push('== '+n+'. '+s.title+' ==');
+    if(s.checks.length){
+      var yes=[], no=[];
+      s.checks.forEach(function(ch,ci){ (state[s.id+':c'+ci]?yes:no).push(ch); });
+      L.push('Нужно: '+(yes.length?yes.join('; '):'—'));
+      L.push('Не отмечено: '+(no.length?no.join('; '):'—'));
+    }
+    s.qs.forEach(function(q,qi){
+      var qid=s.id+':q'+qi, v=state[qid], ans='', note=(state[qid+':note']||'').trim();
+      if(q.k==='t') ans=(v||'').trim();
+      else if(q.k==='r') ans=v!=null?q.o[v]:'';
+      else ans=Array.isArray(v)?v.map(function(i){return q.o[i]}).join('; '):'';
+      if(note) ans=ans?ans+' ('+note+')':note;
+      L.push(''); L.push(n+'.'+(qi+1)+' '+q.t); L.push('Ответ: '+(ans||'—'));
+    });
+  });
+  return L.join('\n');
+}
+
+var out=document.getElementById('out'), statusEl=document.getElementById('status'), copyBtn=document.getElementById('copy'), resetBtn=document.getElementById('reset');
+function showText(msg){
+  out.value=buildText(); out.style.display='block'; copyBtn.hidden=false; statusEl.textContent=msg;
+  out.scrollIntoView({block:'nearest'});
+}
+document.getElementById('build').addEventListener('click',function(){ showText(''); });
+
+var sendBtn=document.getElementById('send');
+var FAIL='Не получилось отправить. Ниже ваши ответы текстом: скопируйте их и пришлите нам в мессенджер или на почту';
+sendBtn.addEventListener('click',function(){
+  var c=refresh();
+  if(c[0]===0){ statusEl.textContent='Сначала ответьте хотя бы на один вопрос'; return; }
+  var text=buildText(), d=new Date(), pad=function(x){return (x<10?'0':'')+x};
+  var name='brief-wall-street-'+d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'-'+pad(d.getHours())+pad(d.getMinutes())+'.txt';
+  var who=String(state['obsh:q0']||'').trim().replace(/\s+/g,' ').slice(0,300);
+  var fd=new FormData();
+  fd.append('chat_id',CHAT_ID);
+  fd.append('caption','Бриф БЦ Wall Street\nОтвечено вопросов: '+c[0]+' из '+c[1]+(who?'\nЗаполнил: '+who:''));
+  fd.append('document',new Blob(['\ufeff'+text],{type:'text/plain;charset=utf-8'}),name);
+  sendBtn.disabled=true; statusEl.textContent='Отправляем…';
+  fetch('https://api.telegram.org/bot'+BOT_ID+':'+BOT_KEY+'/sendDocument',{method:'POST',body:fd})
+    .then(function(r){ return r.json(); })
+    .then(function(j){ if(!j||!j.ok) throw new Error('telegram'); statusEl.textContent='Ответы отправлены. Спасибо, мы свяжемся с вами'; })
+    .catch(function(){ showText(FAIL); })
+    .then(function(){ sendBtn.disabled=false; });
+});
+copyBtn.addEventListener('click',function(){
+  var ok=function(){ statusEl.textContent='Текст скопирован'; };
+  var manual=function(){ out.focus(); out.select(); var done=false; try{ done=document.execCommand('copy'); }catch(e){} statusEl.textContent=done?'Текст скопирован':'Не получилось скопировать: текст выделен, скопируйте его вручную'; };
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(out.value).then(ok,manual); } else { manual(); }
+});
+var armed=false, armTimer=null;
+resetBtn.addEventListener('click',function(){
+  if(!armed){ armed=true; resetBtn.textContent='Точно очистить? Нажмите ещё раз'; armTimer=setTimeout(function(){ armed=false; resetBtn.textContent='Очистить все ответы'; },4000); return; }
+  clearTimeout(armTimer); try{ localStorage.removeItem(KEY); }catch(e){} location.reload();
+});
+</script>
+</body>
+</html>
